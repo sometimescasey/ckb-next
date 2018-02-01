@@ -21,7 +21,7 @@
 /// --------- | -------- | -----------------------
 /// 1 | The first block contains the K63 Non RGB Keyboard. No other K63 is known so far.
 /// 2 | the K65-like keyboards, regardless of their properties (RGB, ...). | In summary, they can be queried using the macro IS_K65().
-/// 3 | K68 keyboards | IS_K68().
+/// 3 | K68 keyboards | IS_K68() and IS_K68_NRGB()
 /// 4 | the K70-like Keyboards with all their configuration types | summarized by IS_K70().
 /// 5 | the K95 series keyboards | collected with the macro IS_K95().
 /// 6 | strafe keyboards | IS_STRAFE()
@@ -60,7 +60,8 @@
 #define P_K68_STR       "1b4f"
 #define P_K68_NRGB      0x1b3f
 #define P_K68_NRGB_STR  "1b3f"
-#define IS_K68(kb)      ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K68 || (kb)->product == P_K68_NRGB))
+#define IS_K68(kb)      ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K68))
+#define IS_K68_NRGB(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K68_NRGB))
 
 #define P_K70                0x1b13
 #define P_K70_STR            "1b13"
@@ -171,7 +172,10 @@ const char* product_str(short product);
 #define IS_PLATINUM(kb)                 ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K95_PLATINUM))
 
 /// Used when a device has a firmware with a low version number that uses the new protocol
-#define IS_V2_OVERRIDE(kb)             (IS_PLATINUM(kb) || IS_K63(kb) || IS_K68(kb) || IS_HARPOON(kb) || IS_GLAIVE(kb) || (kb)->product == P_STRAFE_NRGB_2)
+#define IS_V2_OVERRIDE(kb)             (IS_PLATINUM(kb) || IS_K63(kb) || IS_K68_NRGB(kb) || IS_K68(kb) || IS_HARPOON(kb) || IS_GLAIVE(kb) || (kb)->product == P_STRAFE_NRGB_2)
+
+/// Ditto for V3
+#define IS_V3_OVERRIDE(kb)				(IS_K68(kb))
 
 /// USB delays for when the keyboards get picky about timing
 /// That was the original comment, but it is used anytime.
