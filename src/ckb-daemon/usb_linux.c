@@ -71,7 +71,6 @@ int os_usbsend(usbdevice* kb, const uchar* out_msg, int is_recv, const char* fil
         struct usbdevfs_bulktransfer transfer = {0};
         // FW 2.XX uses 0x03, FW 3.XX uses 0x02
         transfer.ep = (kb->fwversion >= 0x130 && kb->fwversion < 0x200) ? 4 : ((kb->fwversion >= 0x300 || IS_V3_OVERRIDE(kb)) ? 2 : 3);
-        // transfer.ep = 2;
         transfer.len = MSG_SIZE;
         transfer.timeout = 5000;
         transfer.data = (void*)out_msg;
@@ -223,12 +222,7 @@ void os_sendindicators(usbdevice* kb) {
     else {
         ileds = &kb->ileds;
     }
-    
-    //leds = (kb->ileds << 8) | 0x0001;
-    //ileds = &leds;
-
     struct usbdevfs_ctrltransfer transfer = { 0x21, 0x09, 0x0200, 0x00, ((kb->fwversion >= 0x300 || IS_V3_OVERRIDE(kb)) ? 2 : 1), 500, ileds };
-    // struct usbdevfs_ctrltransfer transfer = { 0x21, 0x09, 0x0200, 0x00, 2, 500, ileds };
     int res = ioctl(kb->handle - 1, USBDEVFS_CONTROL, &transfer);
     if(res <= 0) {
         ckb_err("%s\n", res ? strerror(errno) : "No data written");
@@ -286,7 +280,6 @@ void* os_inputmain(void* context){
     /// non RGB Mouse or Keyboard | !IS_RGB | 2 | 15
     ///
     urbs[0].buffer_length = ((kb->fwversion >= 0x300 || IS_V3_OVERRIDE(kb)) ? MSG_SIZE : 8);
-    // urbs[0].buffer_length = MSG_SIZE;
     if(urbcount > 1 && IS_RGB(vendor, product)) {
         if(IS_MOUSE(vendor, product))
             urbs[1].buffer_length = 10;
@@ -352,7 +345,6 @@ void* os_inputmain(void* context){
             // EP workaround for FWv3
             // Corsair input comes through 0x81, but case 1 in keymap.c is used for 6KRO
             uchar urbendpoint = ((kb->fwversion >= 0x300 || IS_V3_OVERRIDE(kb)) ? 2 : (urb->endpoint & 0xF));
-            // uchar urbendpoint = 2;
             if(IS_MOUSE(vendor, product)){
                 switch(urb->actual_length){
                 case 8:
